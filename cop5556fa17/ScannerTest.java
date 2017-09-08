@@ -241,6 +241,39 @@ public class ScannerTest {
         }
         
 	}
+	@Test
+	public void test16() throws LexicalException {
+		String input = ";;\n;//Hello/\n12345;/!!==\n!=";
+		show(input);
+		Scanner scanner = new Scanner(input).scan();
+		show(scanner);
+		checkNext(scanner, SEMI, 0, 1, 1, 1);
+		checkNext(scanner, SEMI, 1, 1, 1, 2);
+		checkNext(scanner, SEMI, 3, 1, 2, 1);
+		checkNext(scanner, INTEGER_LITERAL, 13, 5, 3, 1);
+		checkNext(scanner, SEMI, 18, 1, 3, 6);
+		checkNext(scanner, OP_DIV, 19, 1, 3, 7);
+		checkNext(scanner, OP_EXCL, 20, 1, 3, 8);
+		checkNext(scanner, OP_NEQ, 21, 2, 3, 9);
+		checkNext(scanner, OP_ASSIGN, 23, 1, 3, 11);
+		checkNext(scanner, OP_NEQ, 25, 2, 4, 1);
+		checkNextIsEOF(scanner);
+        
+	}
+		@Test
+		public void test17() throws LexicalException {
+		String input="";
+		input = "//abcd\n\"greeting@\\n\"  true  sinx xsin sin";
+		Scanner scanner = new Scanner(input).scan();
+		show(input);
+		show(scanner);
+		checkNext(scanner,STRING_LITERAL,7,13,2,1);
+		checkNext(scanner, BOOLEAN_LITERAL, 22, 4, 2, 16);
+		checkNext(scanner, IDENTIFIER, 28, 4, 2, 22);
+		checkNext(scanner, IDENTIFIER, 33, 4, 2, 27);
+		checkNext(scanner, KW_sin, 38, 3, 2, 32);
+		checkNextIsEOF(scanner);
+		}
 	/**
 	 * Test illustrating how to put a new line in the input program and how to
 	 * check content of tokens.
@@ -267,7 +300,162 @@ public class ScannerTest {
 		checkNext(scanner, SEMI, 4, 1, 2, 2);
 		checkNextIsEOF(scanner);
 	}
+	@Test
+	public void stringLiteralLineTerminatorTest1() throws LexicalException {
+		String input = "\"anirudh\n\"";
+		show(input);
+		thrown.expect(LexicalException.class);
+		try {
+			new Scanner(input).scan();
+		} catch (LexicalException e) {  //
+			show(e);
+			throw e;
+		}
+		
+	}
+	@Test
+	public void stringLiteralInvalidEscapeTerminationTest() throws LexicalException {
+		String input = "\"anirudh\\b\\t\\n\\f\\r\\\"\\'\\\\\\";
+		show(input);
+		thrown.expect(LexicalException.class);
+		try {
+			new Scanner(input).scan();
+		} catch (LexicalException e) {  //
+			show(e);
+			throw e;
+		}
+		
+	}
+	@Test
+	public void stringLiteralTest() throws LexicalException {
+		String input = "\"anirudh\\b\\t\\n\\f\\r\\\"\\'\\\\\"";
+		show(input);
+		Scanner scanner = new Scanner(input).scan();
+		show(scanner);
+		checkNext(scanner, STRING_LITERAL,0,25,1,1);
+		checkNextIsEOF(scanner);
+		
+	}
+	@Test
+	public void OverflowTest() throws LexicalException {
+		String input = "2147483648";
+		show(input);
+		thrown.expect(LexicalException.class);
+		try {
+			new Scanner(input).scan();
+		} catch (LexicalException e) {  //
+			show(e);
+			throw e;
+		}
+	}
+	@Test
+	public void OperatorAndWhiteSpaceTest() throws LexicalException {
+		String input = "= >\t<\f! ? : == != >= <= & | + - * / % ** @ -> <-";
+		Scanner scanner = new Scanner(input).scan();
+		show(input);
+		show(scanner);
+		int pos = 0;
+		int posInLine = 1;
+		int line = 1;
+		String[] keyword = input.split("[ \t\f]");
+		for(int index=30,i=0;index < 51;index+=1,i+=1){
+
+			Scanner.Kind kind = Scanner.Kind.values()[index];
+			checkNext(scanner, kind, pos, keyword[i].length(), line, posInLine);
+			pos += (keyword[i].length()+1);
+			posInLine = pos +1;
+		}
+		checkNextIsEOF(scanner);
+	}
+	@Test
+	public void SeparatorTest() throws LexicalException {
+		String input = "()[];,";
+		Scanner scanner = new Scanner(input).scan();
+		show(input);
+		show(scanner);
+		int pos = 0;
+		int posInLine = 1;
+		int line = 1;
+		for(int index=51;index < 57;index+=1){
+
+			Scanner.Kind kind = Scanner.Kind.values()[index];
+			checkNext(scanner, kind, pos, 1, line, posInLine);
+			pos += 1;
+			posInLine = pos +1;
+		}
+		checkNextIsEOF(scanner);
+	}
+	@Test
+	public void KeywordTest() throws LexicalException {
+		String input = "x X y Y r R a A Z DEF_X DEF_Y SCREEN cart_x cart_y polar_a polar_r abs sin cos atan log image int boolean url file";
+		Scanner scanner = new Scanner(input).scan();
+		show(input);
+		show(scanner);
+		int pos = 0;
+		int posInLine = 1;
+		int line = 1;
+		String[] keyword = input.split(" ");
+		for(int index=4,i=0;index < 30;index+=1,i+=1){
+
+			Scanner.Kind kind = Scanner.Kind.values()[index];
+			checkNext(scanner, kind, pos, keyword[i].length(), line, posInLine);
+			pos += (keyword[i].length()+1);
+			posInLine = pos +1;
+		}
+		checkNextIsEOF(scanner);
+	}
+	@Test
+	public void DoubleForwardSlash() throws LexicalException {
+		String input = "//anirudh\r\nsarma";
+		Scanner scanner = new Scanner(input).scan();
+		show(input);
+		show(scanner);
+		checkNext(scanner, IDENTIFIER, 11, 5, 2, 1);
+		checkNextIsEOF(scanner);
+	}
+	@Test
+	public void SingleForwardSlash() throws LexicalException {
+		String input = "/";
+		Scanner scanner = new Scanner(input).scan();
+		show(input);
+		show(scanner);
+		checkNext(scanner, OP_DIV, 0, 1, 1, 1);
+		checkNextIsEOF(scanner);
+	}
 	
+	@Test
+	public void earlyTermination() throws LexicalException {
+		String input = "\0";
+		show(input);
+		thrown.expect(LexicalException.class);
+		try {
+			new Scanner(input).scan();
+		} catch (LexicalException e) {  //
+			show(e);
+            
+            throw e;
+		}
+	}
+
+	@Test
+	public void IdentifierTest() throws LexicalException {
+		String input = "truef _a1$ x1 $1 2a";
+		Scanner scanner = new Scanner(input).scan();
+		show(input);
+		show(scanner);
+		checkNext(scanner, IDENTIFIER, 0, 5, 1, 1);
+		checkNext(scanner, IDENTIFIER, 6, 4, 1, 7);
+		checkNext(scanner, IDENTIFIER, 11, 2, 1, 12);
+		checkNext(scanner, IDENTIFIER, 14, 2, 1, 15);
+		checkNext(scanner, INTEGER_LITERAL, 17, 1, 1, 18);
+		checkNext(scanner, KW_a, 18, 1, 1, 19);
+		checkNextIsEOF(scanner);
+	}
+
+
+
+
+
 	/**
 	 * This example shows how to test that your scanner is behaving when the
 	 * input is illegal.  In this case, we are giving it a String literal

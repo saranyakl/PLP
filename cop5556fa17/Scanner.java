@@ -291,7 +291,15 @@ public class Scanner {
 		//System.out.println(chars.length);
 		while(pos<chars.length) {
 			char ch = chars[pos];
-			if(ch == EOFchar) break;
+			if(ch == EOFchar) {
+				if(pos==chars.length-1) {
+					tokens.add(new Token(Kind.EOF, pos, 0, line, posInLine));
+					break;	
+				}
+				else
+					throw new LexicalException("Not the end but found end",pos);
+			}
+			
 			startPos = pos;
 			switch(ch) {
 			//single character token
@@ -449,19 +457,13 @@ public class Scanner {
 			case '/':
 				if(chars[pos+1] == '/') {
 					pos=pos+2;
-					while(pos<chars.length) {
+					while(pos<chars.length-1) {
 						if(chars[pos] == '\n') {
 //							line++;
 //							posInLine=1;
 							break;
 						}
 						else if(chars[pos]=='\r') {
-//							if(chars[pos+1]=='\n') {
-//								pos++;
-//							}
-//							line++;
-//							posInLine=1;
-//							pos++;
 							break;
 						}
 						else
@@ -523,7 +525,7 @@ public class Scanner {
 						if(chars[pos+1]=='n' || chars[pos+1]=='r' || chars[pos+1]=='b' || chars[pos+1]=='t' || 
 								chars[pos+1]=='f' || chars[pos+1]=='"' || chars[pos+1]=='\'' || chars[pos+1]=='\\') {
 							pos=pos+2;
-							posInLine = posInLine+2;
+							
 						}
 						else {
 							throw new LexicalException("Not valid escape sequences",pos);
@@ -837,7 +839,7 @@ public class Scanner {
 //			}
 		}
 		}
-		tokens.add(new Token(Kind.EOF, pos, 0, line, posInLine));
+		
 		return this;
 
 	}
