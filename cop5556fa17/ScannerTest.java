@@ -133,12 +133,113 @@ public class ScannerTest {
 	}
 	@Test
 	public void testIdentifier() throws LexicalException {
-		String input = "abc123";
+		String input = "/*the*/";
+		Scanner scanner = new Scanner(input).scan();
+		show(input);
+		show(scanner);
+		checkNext(scanner, OP_DIV, 0, 1, 1, 1);
+		checkNext(scanner, OP_TIMES, 1, 1, 1, 2);
+		checkNext(scanner, IDENTIFIER, 2, 3, 1, 3);
+		checkNext(scanner, OP_TIMES, 5, 1, 1, 6);
+		checkNext(scanner, OP_DIV, 6, 1, 1, 7);
+		checkNextIsEOF(scanner);
+	}
+	@Test
+	public void test8() throws LexicalException {
+		String input = "abcwdh//kdjhfkjnksgd";
 		Scanner scanner = new Scanner(input).scan();
 		show(input);
 		show(scanner);
 		checkNext(scanner, IDENTIFIER, 0, 6, 1, 1);
 		checkNextIsEOF(scanner);
+	}
+	@Test
+	public void test9() throws LexicalException {
+		String input = "b\bab";
+		
+		show(input);
+		
+		thrown.expect(LexicalException.class);  //Tell JUnit to expect a LexicalException
+		try {
+			Scanner s = new Scanner(input).scan();
+			show(s);
+		} catch (LexicalException e) {  //
+			show(e);
+			assertEquals(1,e.getPos());
+			throw e;
+		}
+			}
+	@Test
+	public void test10() throws LexicalException {
+		String input = "a\tabc";
+		Scanner scanner = new Scanner(input).scan();
+		show(input);
+		show(scanner);
+		checkNext(scanner, KW_a, 0, 1, 1, 1);
+		checkNext(scanner, IDENTIFIER, 2, 3, 1, 3);
+		checkNextIsEOF(scanner);
+	}
+	@Test
+	public void test11() throws LexicalException {
+		String input = "0123";
+		Scanner scanner = new Scanner(input).scan();
+		show(input);
+		show(scanner);
+		checkNext(scanner, INTEGER_LITERAL, 0, 1, 1, 1);
+		checkNext(scanner, INTEGER_LITERAL, 1, 3, 1, 2);
+		checkNextIsEOF(scanner);
+	}
+	@Test
+	public void test12() throws LexicalException {
+		String input = "\"(\"\\n\")\"";
+		show(input);
+		thrown.expect(LexicalException.class);  //Tell JUnit to expect a LexicalException
+		try {
+			new Scanner(input).scan();
+		} catch (LexicalException e) {  //
+			show(e);
+			assertEquals(3,e.getPos());
+			throw e;
+		}
+//		checkNext(scanner, INTEGER_LITERAL, 0, 1, 1, 1);
+//		checkNext(scanner, INTEGER_LITERAL, 1, 3, 1, 2);
+//		checkNextIsEOF(scanner);
+	}
+	@Test
+	public void test13() throws LexicalException {
+		String input = "x=\"\b\";";
+		Scanner scanner = new Scanner(input).scan();
+		show(input);
+		show(scanner);
+		checkNext(scanner, KW_x, 0, 1, 1, 1);
+		checkNext(scanner, OP_ASSIGN, 1, 1, 1, 2);
+		checkNext(scanner, STRING_LITERAL, 2, 3, 1, 3);
+		checkNext(scanner, SEMI, 5, 1, 1, 6);
+		checkNextIsEOF(scanner);
+	}
+	@Test
+	public void test14() throws LexicalException {
+		String input = "Test\rabc";
+		Scanner scanner = new Scanner(input).scan();
+		show(input);
+		show(scanner);
+		checkNext(scanner, IDENTIFIER, 0, 4, 1, 1);
+		checkNext(scanner, IDENTIFIER, 5, 3, 2, 1);
+		checkNextIsEOF(scanner);
+	}
+	@Test
+	public void test15() throws LexicalException {
+		String input = "\" greet\\ings\"";
+		show(input);
+		thrown.expect(LexicalException.class);  //Tell JUnit to expect a LexicalException
+        try {
+            new Scanner(input).scan();
+        } catch (LexicalException e) {  //
+            show(e);
+            assertEquals(7,e.getPos());
+            throw e;
+        }
+        
 	}
 	/**
 	 * Test illustrating how to put a new line in the input program and how to
@@ -154,18 +255,18 @@ public class ScannerTest {
 	 * 
 	 * @throws LexicalException
 	 */
-//	@Test
-//	public void testSemi() throws LexicalException {
-//		String input = ";;\n;;";
-//		Scanner scanner = new Scanner(input).scan();
-//		show(input);
-//		show(scanner);
-//		checkNext(scanner, SEMI, 0, 1, 1, 1);
-//		checkNext(scanner, SEMI, 1, 1, 1, 2);
-//		checkNext(scanner, SEMI, 3, 1, 2, 1);
-//		checkNext(scanner, SEMI, 4, 1, 2, 2);
-//		checkNextIsEOF(scanner);
-//	}
+	@Test
+	public void testSemi() throws LexicalException {
+		String input = ";;\n;;";
+		Scanner scanner = new Scanner(input).scan();
+		show(input);
+		show(scanner);
+		checkNext(scanner, SEMI, 0, 1, 1, 1);
+		checkNext(scanner, SEMI, 1, 1, 1, 2);
+		checkNext(scanner, SEMI, 3, 1, 2, 1);
+		checkNext(scanner, SEMI, 4, 1, 2, 2);
+		checkNextIsEOF(scanner);
+	}
 	
 	/**
 	 * This example shows how to test that your scanner is behaving when the
@@ -186,6 +287,123 @@ public class ScannerTest {
 	 * 
 	 * @throws LexicalException
 	 */
+	@Test
+	public void operatortest() throws LexicalException {
+	    String input = "-><>,->:\n+***@!=! X x 078868 789 1 2 3 4 78318 138472        46 //dxjvbdjbvcodj\n daxcdx 5875 \"vscdvsc\" dsd$hdg_ atan \n ";
+	    Scanner scanner = new Scanner(input).scan();
+        show(input);
+        show(scanner);
+        checkNext(scanner, OP_RARROW, 0, 2, 1, 1);
+        checkNext(scanner, OP_LT,     2, 1, 1, 3);
+        checkNext(scanner, OP_GT,     3, 1, 1, 4);
+        checkNext(scanner, COMMA,     4, 1, 1, 5);
+        checkNext(scanner, OP_RARROW, 5, 2, 1, 6);
+        checkNext(scanner, OP_COLON,  7, 1, 1, 8);
+        checkNext(scanner, OP_PLUS,   9, 1, 2, 1);
+        checkNext(scanner, OP_POWER,  10, 2, 2, 2);
+        checkNext(scanner, OP_TIMES,  12, 1, 2, 4);
+        checkNext(scanner, OP_AT,     13, 1, 2, 5);
+        checkNext(scanner, OP_NEQ,    14, 2, 2, 6);
+        checkNext(scanner, OP_EXCL,   16, 1, 2, 8);
+        checkNext(scanner, KW_X,      18, 1, 2, 10);
+        checkNext(scanner, KW_x,      20, 1, 2, 12);
+        checkNext(scanner, INTEGER_LITERAL,   22, 1, 2, 14);
+        checkNext(scanner, INTEGER_LITERAL,   23, 5, 2, 15);
+        checkNext(scanner, INTEGER_LITERAL,   29, 3, 2, 21);
+        checkNext(scanner, INTEGER_LITERAL,   33, 1, 2, 25);
+        checkNext(scanner, INTEGER_LITERAL,   35, 1, 2, 27);
+        checkNext(scanner, INTEGER_LITERAL,   37, 1, 2, 29);
+        checkNext(scanner, INTEGER_LITERAL,   39, 1, 2, 31);
+        checkNext(scanner, INTEGER_LITERAL,   41, 5, 2, 33);
+        checkNext(scanner, INTEGER_LITERAL,   47, 6, 2, 39);
+        checkNext(scanner, INTEGER_LITERAL,   61, 2, 2, 53);
+        checkNext(scanner, IDENTIFIER,        81, 6, 3, 2);
+        checkNext(scanner, INTEGER_LITERAL,   88, 4, 3, 9);
+        checkNext(scanner, STRING_LITERAL,    93,9,3,14);
+        checkNext(scanner, IDENTIFIER,        103,8,3,24);
+        checkNext(scanner, KW_atan,           112,4,3,33);
+        
+        
+        checkNextIsEOF(scanner);
+	    
+	}
+	@Test
+    public void extraCharTest() throws LexicalException {
+        String input = "abc def/n345 #abc ";
+        show(input);
+        thrown.expect(LexicalException.class);  //Tell JUnit to expect a LexicalException
+        try {
+            new Scanner(input).scan();
+        } catch (LexicalException e) {  //
+            show(e);
+            assertEquals(13,e.getPos());
+            throw e;
+        }
+        
+    }
+	@Test
+    public void testing() throws LexicalException {
+        String input = "99999999999999999";
+        show(input);
+        thrown.expect(LexicalException.class);  //Tell JUnit to expect a LexicalException
+        try {
+            new Scanner(input).scan();
+        } catch (LexicalException e) {  //
+            show(e);
+            assertEquals(17,e.getPos());
+            throw e;
+        }
+        
+    }
+	@Test
+    public void digittest() throws LexicalException {
+        String input = "123()+4+54321  true file abs polar_a boolean ";
+        Scanner scanner = new Scanner(input).scan();
+        show(input);
+        show(scanner);
+        checkNext(scanner, INTEGER_LITERAL, 0, 3, 1, 1);
+        checkNext(scanner, LPAREN,     3, 1, 1, 4);
+        checkNext(scanner, RPAREN,     4, 1, 1, 5);
+        checkNext(scanner, OP_PLUS,     5, 1, 1, 6);
+        checkNext(scanner, INTEGER_LITERAL, 6, 1, 1, 7);
+        checkNext(scanner, OP_PLUS,  7, 1, 1, 8);
+        checkNext(scanner, INTEGER_LITERAL,   8, 5, 1, 9);
+        checkNext(scanner, BOOLEAN_LITERAL,   15, 4, 1, 16);
+        checkNext(scanner, KW_file,   20, 4, 1, 21);
+        checkNext(scanner, KW_abs,   25, 3, 1, 26);
+        checkNext(scanner, KW_polar_a,   29, 7, 1, 30);
+        checkNext(scanner, KW_boolean,   37, 7, 1, 38);
+        
+        
+    }
+	@Test
+    public void escapesequences() throws LexicalException {
+        String input = "123()+4+54321  true file abs polar_a boolean  image\r\n image \n cart_y \n file \"cdvda\" ";
+        Scanner scanner = new Scanner(input).scan();
+        show(input);
+        show(scanner);
+        checkNext(scanner, INTEGER_LITERAL, 0, 3, 1, 1);
+        checkNext(scanner, LPAREN,          3, 1, 1, 4);
+        checkNext(scanner, RPAREN,          4, 1, 1, 5);
+        checkNext(scanner, OP_PLUS,         5, 1, 1, 6);
+        checkNext(scanner, INTEGER_LITERAL, 6, 1, 1, 7);
+        checkNext(scanner, OP_PLUS,         7, 1, 1, 8);
+        checkNext(scanner, INTEGER_LITERAL, 8, 5, 1, 9);
+        checkNext(scanner, BOOLEAN_LITERAL, 15, 4, 1, 16);
+        checkNext(scanner, KW_file,         20, 4, 1, 21);
+        checkNext(scanner, KW_abs,          25, 3, 1, 26);
+        checkNext(scanner, KW_polar_a,      29, 7, 1, 30);
+        checkNext(scanner, KW_boolean,      37, 7, 1, 38);
+        
+        checkNext(scanner, KW_image,        46, 5, 1, 47);
+        checkNext(scanner, KW_image,        54, 5, 2, 2);
+        checkNext(scanner, KW_cart_y,       62, 6, 3, 2);
+        checkNext(scanner, KW_file,         71, 4, 4, 2);
+        checkNext(scanner, STRING_LITERAL,  76, 7, 4, 7);
+        
+        
+        
+    }
 	@Test
 	public void failUnclosedStringLiteral() throws LexicalException {
 		String input = " \" greetings  ";

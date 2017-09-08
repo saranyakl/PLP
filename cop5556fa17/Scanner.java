@@ -445,18 +445,102 @@ public class Scanner {
 					posInLine++;
 				}}
 				break;
+			
 			case '/':
-				{ 
-				pos++;}
+				if(chars[pos+1] == '/') {
+					pos=pos+2;
+					while(pos<chars.length) {
+						if(chars[pos] == '\n') {
+//							line++;
+//							posInLine=1;
+							break;
+						}
+						else if(chars[pos]=='\r') {
+//							if(chars[pos+1]=='\n') {
+//								pos++;
+//							}
+//							line++;
+//							posInLine=1;
+//							pos++;
+							break;
+						}
+						else
+						{
+							pos++;
+							posInLine++;
+						}
+					}
+				}
+				else {
+					tokens.add(new Token(Kind.OP_DIV,startPos,1,line,posInLine));
+					pos++;
+					posInLine++;
+				}
 				break;
-			case '\\':
-				{ pos++; }
+			
+			//new line
+			case '\r':
+				if(chars[pos+1]=='\n') {
+					pos++;
+				}
+				line++;
+				posInLine=1;
+				pos++;
+				break;
+			case '\n':
+				line++;
+				posInLine=1;
+				pos++;
+				break;
+			//White space
+			case ' ':
+				pos++;
+				posInLine++;
+				break;
+			case '\t':
+				pos++;
+				posInLine++;
+				break;
+			case '\f':
+				pos++;
+				posInLine++;
+				break;
+			//String literals
+			case '\"':
+				int sta = pos;
+				pos++;
+				while(pos<chars.length){
+					if(chars[pos]=='\"') {
+						pos++;
+						tokens.add(new Token(Kind.STRING_LITERAL,sta,pos-sta,line,posInLine));
+						posInLine=posInLine+pos-sta;
+						break;
+					}
+					else if(chars[pos]=='\n' || chars[pos] == EOFchar || chars[pos]=='\r') {
+						throw new LexicalException("Quotes not closed",pos-1);
+					}
+					else if(chars[pos]=='\\') {
+						if(chars[pos+1]=='n' || chars[pos+1]=='r' || chars[pos+1]=='b' || chars[pos+1]=='t' || 
+								chars[pos+1]=='f' || chars[pos+1]=='"' || chars[pos+1]=='\'' || chars[pos+1]=='\\') {
+							pos=pos+2;
+							posInLine = posInLine+2;
+						}
+						else {
+							throw new LexicalException("Not valid escape sequences",pos);
+						}
+					}
+					else {
+						pos++;
+						
+	//					System.out.println(chars[pos]);
+					}
+				}
 				break;
 			default:
 				if(Character.isDigit(ch)) {
 					int start = pos;
 					pos++;
-					while(Character.isDigit(chars[pos])) pos++;
+					while(pos<chars.length && Character.isDigit(chars[pos])) pos++;
 					try {
 						int i = Integer.parseInt(new String(chars,start,pos-start));
 					}
@@ -496,8 +580,9 @@ public class Scanner {
 					case "atan": tokens.add(new Token(Kind.KW_atan,start,pos-start,line,posInLine)); break;
 					case "int": tokens.add(new Token(Kind.KW_int,start,pos-start,line,posInLine)); break;
 					case "image": tokens.add(new Token(Kind.KW_image,start,pos-start,line,posInLine)); break;
-					case "true": tokens.add(new Token(Kind.KW_boolean,start,pos-start,line,posInLine)); break;
-					case "false": tokens.add(new Token(Kind.KW_boolean,start,pos-start,line,posInLine)); break;
+					case "true": tokens.add(new Token(Kind.BOOLEAN_LITERAL,start,pos-start,line,posInLine)); break;
+					case "false": tokens.add(new Token(Kind.BOOLEAN_LITERAL,start,pos-start,line,posInLine)); break;
+					case "boolean": tokens.add(new Token(Kind.KW_boolean,start,pos-start,line,posInLine)); break;
 					case "url": tokens.add(new Token(Kind.KW_url,start,pos-start,line,posInLine)); break;
 					case "file": tokens.add(new Token(Kind.KW_file,start,pos-start,line,posInLine)); break;
 					default: tokens.add(new Token(Kind.IDENTIFIER,start,pos-start,line,posInLine)); break;
