@@ -13,7 +13,7 @@
 
 package cop5556fa17;
 
-
+	
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -519,7 +519,7 @@ public class Scanner {
 						break;
 					}
 					else if(chars[pos]=='\n' || chars[pos] == EOFchar || chars[pos]=='\r') {
-						throw new LexicalException("Quotes not closed",pos-1);
+						throw new LexicalException("Quotes not closed",pos);
 					}
 					else if(chars[pos]=='\\') {
 						if(chars[pos+1]=='n' || chars[pos+1]=='r' || chars[pos+1]=='b' || chars[pos+1]=='t' || 
