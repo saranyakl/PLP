@@ -46,7 +46,6 @@ public class Parser {
 		return p;
 	}
 	
-
 	/**
 	 * Program ::=  IDENTIFIER   ( Declaration SEMI | Statement SEMI )*   
 	 * 
@@ -141,10 +140,9 @@ public class Parser {
 	
 	Declaration_SourceSink sourceSinkDeclaration() throws SyntaxException {
 		Token temp = t;
-		sourceSinkType();
+		Token type = sourceSinkType();
 		Token name = t;
 		match(Kind.IDENTIFIER);
-		Token type = t;
 		match(Kind.OP_ASSIGN);
 		Source source = source();
 		return new Declaration_SourceSink(temp, type, name, source);
@@ -171,14 +169,15 @@ public class Parser {
 			throw new SyntaxException(t, "From source: wrong keyword, "+t.kind);
 	}
 	
-	void sourceSinkType() throws SyntaxException {
+	Token sourceSinkType() throws SyntaxException {
+		Token temp = t;
 		if(t.kind == Kind.KW_url)
 			consume();
 		else if(t.kind == Kind.KW_file)
 			consume();
 		else
 			throw new SyntaxException(t, "From sourcesinktype: wrong keyword, "+t.kind);
-		return;
+		return temp;
 	}
 	
 	Declaration_Image imageDeclaration() throws SyntaxException {
@@ -344,7 +343,9 @@ public class Parser {
 		switch(t.kind) {
 		case OP_EXCL:
 			consume();
-			return unaryExpression();
+			Expression e = unaryExpression();
+			return new Expression_Unary(temp, temp, e);
+//			return unaryExpression();
 		case IDENTIFIER:
 			return identOrPixelSelectorExpression();
 		case KW_x:case KW_y:case KW_r:case KW_a:case KW_X:case KW_Y:case KW_Z:case KW_A:case KW_R:case KW_DEF_X:case KW_DEF_Y:
@@ -371,7 +372,7 @@ public class Parser {
 			match(Kind.RPAREN);
 		}
 		else if(t.kind==Kind.BOOLEAN_LITERAL) {
-			consume();
+			consume();	
 			String str = temp.getText();
 			if(str.equalsIgnoreCase("true") || str.equalsIgnoreCase("false")) {
 				boolean val = Boolean.valueOf(str);
