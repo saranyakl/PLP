@@ -79,7 +79,7 @@ public class Parser {
 	 * 
 	 * @throws SyntaxException
 	 */
-	Expression expression() throws SyntaxException {
+	public 	Expression expression() throws SyntaxException {
 		Token temp = t;
 		Expression e0 = null;
 		Expression e1 = null;
@@ -140,12 +140,12 @@ public class Parser {
 	
 	Declaration_SourceSink sourceSinkDeclaration() throws SyntaxException {
 		Token temp = t;
-		Token type = sourceSinkType();
+		sourceSinkType();
 		Token name = t;
 		match(Kind.IDENTIFIER);
 		match(Kind.OP_ASSIGN);
 		Source source = source();
-		return new Declaration_SourceSink(temp, type, name, source);
+		return new Declaration_SourceSink(temp, temp, name, source);
 	}
 	
 	Source source() throws SyntaxException {
@@ -169,15 +169,15 @@ public class Parser {
 			throw new SyntaxException(t, "From source: wrong keyword, "+t.kind);
 	}
 	
-	Token sourceSinkType() throws SyntaxException {
-		Token temp = t;
+	void sourceSinkType() throws SyntaxException {
+//		Token temp = t;
 		if(t.kind == Kind.KW_url)
 			consume();
 		else if(t.kind == Kind.KW_file)
 			consume();
 		else
 			throw new SyntaxException(t, "From sourcesinktype: wrong keyword, "+t.kind);
-		return temp;
+//		return temp;
 	}
 	
 	Declaration_Image imageDeclaration() throws SyntaxException {
@@ -223,9 +223,9 @@ public class Parser {
 	Sink sink() throws SyntaxException {
 		Token temp = t;
 		if(t.kind == Kind.IDENTIFIER) {
-			Token name = t;
+//			Token name = t;
 			consume();
-			return new Sink_Ident(temp,name);
+			return new Sink_Ident(temp,temp);
 		}
 		else if(t.kind == Kind.KW_SCREEN) {
 			consume();
@@ -368,19 +368,20 @@ public class Parser {
 		}
 		else if(t.kind==Kind.LPAREN) {
 			consume();
-			expression();
+			e0 = expression();
 			match(Kind.RPAREN);
 		}
 		else if(t.kind==Kind.BOOLEAN_LITERAL) {
 			consume();	
-			String str = temp.getText();
-			if(str.equalsIgnoreCase("true") || str.equalsIgnoreCase("false")) {
-				boolean val = Boolean.valueOf(str);
-				e0 = new Expression_BooleanLit(temp, val);
-			}
+//			String str = temp.getText();
+			e0 = new Expression_BooleanLit(temp, temp.getText().equals("true"));
+//			if(str.equalsIgnoreCase("true") || str.equalsIgnoreCase("false")) {
+//				boolean val = Boolean.valueOf(str);
+//				e0 = new Expression_BooleanLit(temp, val);
+//			}
 		}
 		else
-			functionApplication();
+			e0 = functionApplication();
 		return e0;
 	}
 	
@@ -412,18 +413,18 @@ public class Parser {
 		Token temp = t;
 		functionName();
 		if(t.kind==Kind.LPAREN) {
-			Kind k = t.kind;
+//			Kind k = temp.kind;
 			consume();
 			Expression e = expression();
 			match(Kind.RPAREN);
-			return new Expression_FunctionAppWithExprArg(temp,k,e);
+			return new Expression_FunctionAppWithExprArg(temp,temp.kind,e);
 		}
 		else if(t.kind==Kind.LSQUARE) {
-			Kind ki = t.kind;
+//			Kind ki = temp.kind;
 			consume();
 			Index i = selector();
 			match(Kind.RSQUARE);
-			return new Expression_FunctionAppWithIndexArg(temp,ki,i);
+			return new Expression_FunctionAppWithIndexArg(temp,temp.kind,i);
 		}
 		else
 			throw new SyntaxException(t,"From functionApplication: wrong keyword "+t.kind);
@@ -477,25 +478,23 @@ public class Parser {
 	
 	Index xySelector() throws SyntaxException {
 		Token temp = t;
-		Token kwx = t;
 		match(Kind.KW_x);
-		Expression e0 = new Expression_PredefinedName(kwx,Kind.KW_x);
+		Expression e0 = new Expression_PredefinedName(temp,temp.kind);
 		match(Kind.COMMA);
 		Token kwy = t;
 		match(Kind.KW_y);
-		Expression e1 = new Expression_PredefinedName(kwy,Kind.KW_y);
+		Expression e1 = new Expression_PredefinedName(kwy,kwy.kind);
 		return new Index(temp,e0,e1);
 	}
 	
 	Index raSelector() throws SyntaxException {
 		Token temp = t;
-		Token kwr = t;
-		Expression e0 = new Expression_PredefinedName(kwr,Kind.KW_r);
 		match(Kind.KW_r);
+		Expression e0 = new Expression_PredefinedName(temp,temp.kind);
 		match(Kind.COMMA);
 		Token kwa = t;
 		match(Kind.KW_A);
-		Expression e1 = new Expression_PredefinedName(kwa,Kind.KW_A);
+		Expression e1 = new Expression_PredefinedName(kwa,kwa.kind);
 		return new Index(temp,e0,e1);
 	}
 	
