@@ -7,7 +7,20 @@ public class LHS extends ASTNode{
 	public final String name;
 	public final Index index;
 
+	
+	boolean isCartesian;
+	public boolean isCartesian() {
+		return isCartesian;
+	}
 
+	Declaration dec;  //declaration for name.  Set during type checking
+	public void setDec(Declaration dec) {this.dec = dec;}
+	public Declaration getDec() {return dec;}
+	
+
+	public void setCartesian(boolean isCartesian) {
+		this.isCartesian = isCartesian;
+	}
 
 	public LHS(Token firstToken, Token name, Index index) {
 		super(firstToken);

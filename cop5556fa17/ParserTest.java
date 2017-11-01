@@ -476,18 +476,18 @@ public class ParserTest {
 		assertNull(dec1.source);
 	}
 	
-	@Test
-	public void testcase10() throws SyntaxException, LexicalException {
-		String input = "prog k[[x,y]]"; 
-		show(input);
-		Scanner scanner = new Scanner(input).scan();  
-		show(scanner);   
-		Parser parser = new Parser(scanner);
-		Program ast=parser.program();  //Parse the program
-		show(ast);
-//		assertEquals(ast.name,"prog");
-//		assertEquals(ast.decsAndStatements.size(),0);
-	}
+//	@Test
+//	public void testcase10() throws SyntaxException, LexicalException {
+//		String input = "prog k[[x,y]]"; 
+//		show(input);
+//		Scanner scanner = new Scanner(input).scan();  
+//		show(scanner);   
+//		Parser parser = new Parser(scanner);
+//		Program ast=parser.program();  //Parse the program
+//		show(ast);
+////		assertEquals(ast.name,"prog");
+////		assertEquals(ast.decsAndStatements.size(),0);
+//	}
 	
 	@Test
 	public void testcase10parse() throws SyntaxException, LexicalException {
