@@ -13,7 +13,9 @@ public abstract class ASTNode {
 		this.firstToken = firstToken;
 		this.ntype = Type.NONE;
 	}
-
+	public Type getType() {
+		return this.ntype;
+	}
 	public abstract Object visit(ASTVisitor v, Object arg) throws Exception;
 
 	@Override

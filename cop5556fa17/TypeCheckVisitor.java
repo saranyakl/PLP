@@ -379,11 +379,11 @@ public class TypeCheckVisitor implements ASTVisitor {
 		
 			Type st = (Type) statement_In.source.visit(this, null);
 			statement_In.setDec(symbolTable.get(statement_In.name));
-			if(symbolTable.get(statement_In.name)!=null && symbolTable.get(statement_In.name).ntype==st) {
-				
-			}
-			else
-				throw new SemanticException(statement_In.firstToken,"from statement_In, Require statement failed");
+//			if(symbolTable.get(statement_In.name)!=null && symbolTable.get(statement_In.name).ntype==st) {
+//				
+//			}
+//			else
+//				throw new SemanticException(statement_In.firstToken,"from statement_In, Require statement failed");
 //		}
 		return statement_In.ntype;
 	}
