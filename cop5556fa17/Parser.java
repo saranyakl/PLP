@@ -493,7 +493,7 @@ public class Parser {
 		Expression e0 = new Expression_PredefinedName(temp,temp.kind);
 		match(Kind.COMMA);
 		Token kwa = t;
-		match(Kind.KW_A);
+		match(Kind.KW_a);
 		Expression e1 = new Expression_PredefinedName(kwa,kwa.kind);
 		return new Index(temp,e0,e1);
 	}

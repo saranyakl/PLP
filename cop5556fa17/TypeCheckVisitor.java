@@ -264,7 +264,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 			throws Exception {
 //		if(source_CommandLineParam.paramNum!=null) {
 			Type et = (Type) source_CommandLineParam.paramNum.visit(this, null);
-			source_CommandLineParam.ntype=et;
+			source_CommandLineParam.ntype=null;
 			if(et==Type.INTEGER) {
 				
 			}
@@ -303,7 +303,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 			Type st = (Type) declaration_SourceSink.source.visit(this, null);
 			symbolTable.put(declaration_SourceSink.name, declaration_SourceSink);
 			declaration_SourceSink.ntype = TypeUtils.getType(declaration_SourceSink.firstToken);
-			if(st!=declaration_SourceSink.ntype)
+			if(st==declaration_SourceSink.ntype || st==null) {}
+			else
 				throw new SemanticException(declaration_SourceSink.firstToken, "From declaration_SourceSink, require failed");
 //		}
 		return declaration_SourceSink.ntype;
@@ -395,7 +396,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 			Type et = (Type) statement_Assign.e.visit(this, null);
 			Type it = (Type) statement_Assign.lhs.visit(this, null);
 			if(et!=it) {
-				throw new SemanticException(statement_Assign.firstToken,"From statement_Assign, type mismatch");
+				if(it == Type.IMAGE && et == Type.INTEGER) {}
+				else
+					throw new SemanticException(statement_Assign.firstToken,"From statement_Assign, type mismatch");
 			}
 //		}
 		statement_Assign.setCartesian(statement_Assign.lhs.isCartesian());

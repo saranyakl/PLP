@@ -150,7 +150,10 @@ public class CodeGenUtils{
 				mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/Boolean","toString","(Z)Ljava/lang/String;", false);
 			}
 				break;
-			//TODO other types if needed
+			case IMAGE: {
+				mv.visitMethodInsn(Opcodes.INVOKESTATIC, "cop5556fa17/RuntimeLog", "globalLogAddImage", "("+ImageSupport.ImageDesc+")V", false);
+				return;
+			}
 			default: {
 				throw new RuntimeException("genLogTOS called unimplemented type " + type);
 			}
